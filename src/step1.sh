@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p ../task1
 rm ./task1/* > /dev/null 2<&1
 rm ./src/csim  > /dev/null 2<&1
 rm ./src/csim-ref  > /dev/null 2<&1
@@ -12,6 +13,6 @@ cat info | grep "程序无效" >result 2>&1
 if [ $? -eq 0 ]; then
     cat info
 else
-    tail info -n 5
+    tail -n 5 info
 fi
 cat info > ../task1/step1.txt   2>&1

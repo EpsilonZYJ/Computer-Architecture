@@ -1,0 +1,9 @@
+*.dSYM
+.csim_results
+csim
+csim-ref
+info
+result
+test-csim
+.DS_Store
+*.txt

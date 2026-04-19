@@ -37,11 +37,11 @@ def main():
     autograde = opts.autograde
 
     # Check the correctness of the cache simulator
-    print " 测试模拟器"
-    print "运行 ./test-csim"
+    print (" 测试模拟器")
+    print ("运行 ./test-csim")
     p = subprocess.Popen("./test-csim", 
                          shell=True, stdout=subprocess.PIPE)
-    stdout_data = p.communicate()[0]
+    stdout_data = p.communicate()[0].decode('utf-8', errors='replace')
 
     # Emit the output from test-csim
     stdout_data = re.split('\n', stdout_data)
@@ -49,11 +49,11 @@ def main():
         if re.match("TEST_CSIM_RESULTS", line):
             resultsim = re.findall(r'(\d+)', line)
         else:
-            print "%s" % (line)
+            print ("%s" % (line))
     if float(resultsim[0])<=1 :
-        print "程序无效"
+        print ("程序无效")
     else:
-        print "yi2.trace测试通过，\nyi1.trace测试通过，\ndave.trace测试通过，\ntrace.trace测试通过，\nlong.trace测试通过!"
+        print ("yi2.trace测试通过，\nyi1.trace测试通过，\ndave.trace测试通过，\ntrace.trace测试通过，\nlong.trace测试通过!")
 
     
     
