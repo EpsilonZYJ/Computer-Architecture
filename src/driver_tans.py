@@ -49,26 +49,35 @@ def main():
 
     # Check the correctness and performance of the transpose function
     # 32x32 transpose
-    print " 测试矩阵转置"
+    print (" 测试矩阵转置")
     #print "运行 ./test-trans -M 32 -N 32"
     p = subprocess.Popen("./test-trans -M 32 -N 32 | grep TEST_TRANS_RESULTS", 
                          shell=True, stdout=subprocess.PIPE)
-    stdout_data = p.communicate()[0]
+    stdout_data = p.communicate()[0].decode('utf-8', errors='replace')
     result32 = re.findall(r'(\d+)', stdout_data)
+    if len(result32) < 2:
+        print("test-trans 32x32 输出异常:\n%s" % stdout_data)
+        sys.exit(1)
     
     # 64x64 transpose
     #print "运行 ./test-trans -M 64 -N 64"
     p = subprocess.Popen("./test-trans -M 64 -N 64 | grep TEST_TRANS_RESULTS", 
                          shell=True, stdout=subprocess.PIPE)
-    stdout_data = p.communicate()[0]
+    stdout_data = p.communicate()[0].decode('utf-8', errors='replace')
     result64 = re.findall(r'(\d+)', stdout_data)
+    if len(result64) < 2:
+        print("test-trans 64x64 输出异常:\n%s" % stdout_data)
+        sys.exit(1)
     
     # 61x67 transpose
     #print "运行 ./test-trans -M 61 -N 67"
     p = subprocess.Popen("./test-trans -M 61 -N 67 | grep TEST_TRANS_RESULTS", 
                          shell=True, stdout=subprocess.PIPE)
-    stdout_data = p.communicate()[0]
+    stdout_data = p.communicate()[0].decode('utf-8', errors='replace')
     result61 = re.findall(r'(\d+)', stdout_data)
+    if len(result61) < 2:
+        print("test-trans 61x67 输出异常:\n%s" % stdout_data)
+        sys.exit(1)
     
     # Compute the scores for each step
     trans_cscore = int(result32[0]) * int(result64[0]) * int(result61[0]);
@@ -81,47 +90,47 @@ def main():
     total_score =  trans32_score + trans64_score + trans61_score
 
     # Summarize the results
-    print "\n实验汇总:"
-    print "%-22s%8s%10s%12s" % ("转置矩阵类型", "得分", "该项分值", "是否有效")
+    print ("\n实验汇总:")
+    print ("%s%8s%10s%12s" % ("转置矩阵类型", "得分", "该项分值", "是否有效"))  
 
 
     misses = str(miss32)
     if miss32 == 2**31-1 :
         misses = "invalid"
-    print "%-22s%8.1f%10d%12s" % ("32x32", trans32_score, 
-                                  maxscore['trans32'], misses)
+    print ("%s%8.1f%10d%12s" % ("32x32", trans32_score, 
+                                  maxscore['trans32'], misses))
 
     misses = str(miss64)
     if miss64 == 2**31-1 :
         misses = "invalid"
-    print "%-22s%8.1f%10d%12s" % ("64x64", trans64_score, 
-                                  maxscore['trans64'], misses)
+    print ("%s%8.1f%10d%12s" % ("64x64", trans64_score, 
+                                  maxscore['trans64'], misses))
 
     misses = str(miss61)
     if miss61 == 2**31-1 :
         misses = "invalid"
-    print "%-22s%8.1f%10d%12s" % ("61x67", trans61_score, 
-                                  maxscore['trans61'], misses)
+    print ("%s%8.1f%10d%12s" % ("61x67", trans61_score, 
+                                  maxscore['trans61'], misses))
 
-    print "  %22s%8.1f%10d" % ("合  计", total_score,
+    print ("  %s%8.1f%10d" % ("合  计", total_score,
                              maxscore['trans32'] + 
                              maxscore['trans64'] +
-                             maxscore['trans61'])
+                             maxscore['trans61']))
     if total_score<=0.0:
-        print "程序没有改进"
+        print ("程序没有改进")
     if trans32_score >=1:
-        print "矩阵32x32转置优化完成，"
+        print ("矩阵32x32转置优化完成，")
     if trans64_score >=1:
-        print "矩阵64x64转置优化完成，"
+        print ("矩阵64x64转置优化完成，")
     if trans61_score >=1 :
-        print "矩阵61x67转置优化完成!"
+        print ("矩阵61x67转置优化完成!")
     
     # Emit autoresult string for Autolab if called with -A option
     if autograde:
         autoresult="%.1f:%d:%d:%d" % (total_score, miss32, miss64, miss61)
-        print "\nAUTORESULT_STRING=%s" % autoresult
-    
-    
+        print ("\\nAUTORESULT_STRING=%s" % autoresult)
+
+
 # execute main only if called as a script
 if __name__ == "__main__":
     main()

@@ -7,3 +7,7 @@ result
 test-csim
 .DS_Store
 *.txt
+*.o
+tracegen
+test-trans
+*.tmp
