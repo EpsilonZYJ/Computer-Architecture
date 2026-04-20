@@ -43,7 +43,7 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
     } else if (M == 64) {
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                // A₁₁ᵀ → B₁₁，A₁₂ᵀ → B₁₂（临时位置）
+                // A11^T -> B11, A12^T -> B12 (temporary area)
                 for (k = 0; k < 4; k++) {
                     a1 = A[i * 8 + k][j * 8];
                     a2 = A[i * 8 + k][j * 8 + 1];
@@ -64,34 +64,30 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
                     B[j * 8 + 3][i * 8 + k + 4] = a8;
                 }
 
-                // 将B₁₂中的A₁₂ᵀ搬到B₂₁，同时将A₂₁ᵀ写入B₁₂
+                // Move temporary A12^T from B12 to B21, and write A21^T to B12.
                 for (k = 0; k < 4; k++) {
-                    /* 读出B₁₂中暂存的A₁₂ᵀ（B行已在Cache中，命中） */
                     a1 = B[j * 8 + k][i * 8 + 4];
                     a2 = B[j * 8 + k][i * 8 + 5];
                     a3 = B[j * 8 + k][i * 8 + 6];
                     a4 = B[j * 8 + k][i * 8 + 7];
 
-                    /* 读A₂₁的一列 */
-                    a5 = B[i * 8 + 4][j * 8 + k];
-                    a6 = B[i * 8 + 5][j * 8 + k];
-                    a7 = B[i * 8 + 6][j * 8 + k];
-                    a8 = B[i * 8 + 7][j * 8 + k];
+                    a5 = A[i * 8 + 4][j * 8 + k];
+                    a6 = A[i * 8 + 5][j * 8 + k];
+                    a7 = A[i * 8 + 6][j * 8 + k];
+                    a8 = A[i * 8 + 7][j * 8 + k];
 
-                    /* A₂₁ᵀ → B₁₂ */
                     B[j * 8 + k][i * 8 + 4] = a5;
                     B[j * 8 + k][i * 8 + 5] = a6;
                     B[j * 8 + k][i * 8 + 6] = a7;
                     B[j * 8 + k][i * 8 + 7] = a8;
 
-                    /* A₁₂ᵀ → B₂₁ */
                     B[j * 8 + 4 + k][i * 8] = a1;
                     B[j * 8 + 4 + k][i * 8 + 1] = a2;
                     B[j * 8 + 4 + k][i * 8 + 2] = a3;
                     B[j * 8 + 4 + k][i * 8 + 3] = a4;
                 }
 
-                // A₂₂ → B₂₂
+                // A22^T -> B22
                 for (k = 0; k < 4; k++) {
                     a5 = A[i * 8 + 4 + k][j * 8 + 4];
                     a6 = A[i * 8 + 4 + k][j * 8 + 5];
