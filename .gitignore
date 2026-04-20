@@ -11,3 +11,4 @@ test-csim
 tracegen
 test-trans
 *.tmp
+.marker
